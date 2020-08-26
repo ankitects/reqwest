@@ -306,7 +306,7 @@ impl ClientBuilder {
         }
 
         let mut connector = hyper_timeout::TimeoutConnector::new(connector);
-        connector.set_io_timeout(Some(Duration::from_secs(30)));
+        connector.set_io_timeout(Some(Duration::from_secs(60)));
 
         let hyper_client = builder.build(connector);
 
