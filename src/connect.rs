@@ -26,7 +26,7 @@ use crate::proxy::{Proxy, ProxyScheme};
 use crate::error::BoxError;
 #[cfg(feature = "default-tls")]
 use self::native_tls_conn::NativeTlsConn;
-#[cfg(feature = "rustls-tls")]
+#[cfg(feature = "__rustls")]
 use self::rustls_tls_conn::RustlsTlsConn;
 
 #[derive(Clone)]
@@ -122,7 +122,7 @@ enum Inner {
     Http(HttpConnector),
     #[cfg(feature = "default-tls")]
     DefaultTls(HttpConnector, TlsConnector),
-    #[cfg(feature = "rustls-tls")]
+    #[cfg(feature = "__rustls")]
     RustlsTls {
         http: HttpConnector,
         tls: Arc<rustls::ClientConfig>,
@@ -198,7 +198,7 @@ impl Connector {
         }
     }
 
-    #[cfg(feature = "rustls-tls")]
+    #[cfg(feature = "__rustls")]
     pub(crate) fn new_rustls_tls<T>(
         mut http: HttpConnector,
         tls: rustls::ClientConfig,
@@ -281,7 +281,7 @@ impl Connector {
                     });
                 }
             }
-            #[cfg(feature = "rustls-tls")]
+            #[cfg(feature = "__rustls")]
             Inner::RustlsTls { tls_proxy, .. } => {
                 if dst.scheme() == Some(&Scheme::HTTPS) {
                     use tokio_rustls::webpki::DNSNameRef;
@@ -356,7 +356,7 @@ impl Connector {
                     is_proxy,
                 })
             }
-            #[cfg(feature = "rustls-tls")]
+            #[cfg(feature = "__rustls")]
             Inner::RustlsTls { http, tls, .. } => {
                 let mut http = http.clone();
 
@@ -433,7 +433,7 @@ impl Connector {
                     });
                 }
             }
-            #[cfg(feature = "rustls-tls")]
+            #[cfg(feature = "__rustls")]
             Inner::RustlsTls {
                 http,
                 tls,
@@ -789,7 +789,7 @@ mod native_tls_conn {
     }
 }
 
-#[cfg(feature = "rustls-tls")]
+#[cfg(feature = "__rustls")]
 mod rustls_tls_conn {
     use rustls::Session;
     use std::mem::MaybeUninit;
