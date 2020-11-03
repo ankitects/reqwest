@@ -75,7 +75,7 @@ bytes = "0.5"
 serde = "1.0"
 serde_urlencoded = "0.6.1"
 mime_guess = "2.0"
-hyper-timeout = { git = "https://github.com/ankitects/hyper-timeout.git", branch = "shared-timeout" }
+hyper-timeout = { git = "https://github.com/ankitects/hyper-timeout.git", tag = "anki-2020-11-03" }
 
 ## json
 serde_json = { version = "1.0", optional = true }
