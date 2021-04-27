@@ -77,6 +77,7 @@ struct Config {
     #[cfg(feature = "__tls")]
     certs_verification: bool,
     connect_timeout: Option<Duration>,
+    io_timeout: Option<Duration>,
     connection_verbose: bool,
     pool_idle_timeout: Option<Duration>,
     pool_max_idle_per_host: usize,
@@ -133,6 +134,7 @@ impl ClientBuilder {
                 #[cfg(feature = "__tls")]
                 certs_verification: true,
                 connect_timeout: None,
+                io_timeout: None,
                 connection_verbose: false,
                 pool_idle_timeout: Some(Duration::from_secs(90)),
                 pool_max_idle_per_host: std::usize::MAX,
@@ -339,6 +341,9 @@ impl ClientBuilder {
         if config.http1_title_case_headers {
             builder.http1_title_case_headers(true);
         }
+
+        let mut connector = hyper_timeout::TimeoutConnector::new(connector);
+        connector.set_io_timeout(config.io_timeout);
 
         let hyper_client = builder.build(connector);
 
@@ -633,6 +638,19 @@ impl ClientBuilder {
     /// a tokio timer enabled.
     pub fn connect_timeout(mut self, timeout: Duration) -> ClientBuilder {
         self.config.connect_timeout = Some(timeout);
+        self
+    }
+
+    /// Set a timeout for a read or write operation to occur.
+    ///
+    /// Default is `None`.
+    ///
+    /// # Note
+    ///
+    /// This **requires** the futures be executed in a tokio runtime with
+    /// a tokio timer enabled.
+    pub fn io_timeout(mut self, timeout: Duration) -> ClientBuilder {
+        self.config.io_timeout = Some(timeout);
         self
     }
 
@@ -990,7 +1008,8 @@ impl ClientBuilder {
     }
 }
 
-type HyperClient = hyper::Client<Connector, super::body::ImplStream>;
+type HyperClient =
+    hyper::Client<hyper_timeout::TimeoutConnector<Connector>, super::body::ImplStream>;
 
 impl Default for Client {
     fn default() -> Self {
