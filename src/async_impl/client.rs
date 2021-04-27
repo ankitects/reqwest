@@ -340,6 +340,10 @@ impl ClientBuilder {
             builder.http1_title_case_headers(true);
         }
 
+        let mut connector = hyper_timeout::TimeoutConnector::new(connector);
+        connector.set_read_timeout(Some(Duration::from_secs(30)));
+        connector.set_write_timeout(Some(Duration::from_secs(30)));
+
         let hyper_client = builder.build(connector);
 
         let proxies_maybe_http_auth = proxies.iter().any(|p| p.maybe_has_http_auth());
@@ -990,7 +994,8 @@ impl ClientBuilder {
     }
 }
 
-type HyperClient = hyper::Client<Connector, super::body::ImplStream>;
+type HyperClient =
+    hyper::Client<hyper_timeout::TimeoutConnector<Connector>, super::body::ImplStream>;
 
 impl Default for Client {
     fn default() -> Self {
