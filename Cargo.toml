@@ -78,7 +78,7 @@ url = "2.2"
 bytes = "1.0"
 serde = "1.0"
 serde_urlencoded = "0.7"
-hyper-timeout = { git = "https://github.com/ankitects/hyper-timeout.git", branch = "shared-timeout" }
+hyper-timeout = { git = "https://github.com/ankitects/hyper-timeout.git", rev = "0cb6f7d14c62819e37cd221736f8b0555e823712" }
 
 # Optional deps...
 
